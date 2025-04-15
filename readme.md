@@ -16,8 +16,7 @@ With this package, you can control everything from a single Lovelace card:
 > - Integrated numeric keypad
 > - Automatic snapshot when door opens
 > - Snapshot sent to Telegram
-> - Visual feedback for incorrect PIN
-> - Access statistics
+> - Visual feedback for correct/incorrect PIN
 
 👉 Want to support us and get the full experience?  
 [💖 Get the PRO version on Gumroad](https://stateforge.gumroad.com/l/PackagePortaIngresso?wanted=true)
