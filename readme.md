@@ -122,7 +122,8 @@ Abbiamo preferito fare 4 tipi di card in base ad ogni esigenza:
 
 Sostituisci nel codice YAML i nomi, l' entità e il servizio con quelle reali del tuo dispositivo che eseguono l'azione di apertura, come da immagine:
 
-![cancello_lock](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/sample/cancello_lock.gif)
+![cancello_lock](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/cancello_lock.gif) 
+![cancello_switch](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/cancello_switch.gif)
 
 Assicurarsi che `service: lock.unlock` oppure `service: switch.toggle` siano realmente i servizi che aprono il Portone o il Cancello!
 ---
@@ -133,7 +134,7 @@ Ora **riavvia il server** da Impostazioni → Sistema → Controlli del server.
 
 Se tutto è configurato correttamente, dovresti vedere una schermata simile a questa:
 
-![sample](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/sample/sample.gif)
+![sample](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/sample.gif)
 
 ---
 
