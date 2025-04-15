@@ -1,0 +1,220 @@
+type: entities
+entities:
+  - type: custom:hui-element
+    card_type: vertical-stack
+    cards:
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                name: Main Door
+                entity: binary_sensor.door_package_sensor
+                show_icon: false
+                show_state: true
+                styles:
+                  state:
+                    - font-size: 10px
+                  card:
+                    - width: 135px
+                tap_action:
+                  action: none
+              - type: custom:button-card
+                name: |
+                  [[[
+                    var date = new Date(states['input_datetime.last_door_open'].state);
+                    return "Last Opened: " + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                  ]]]
+                entity: input_datetime.last_door_open
+                show_icon: false
+                show_state: false
+                tap_action:
+                  action: none
+                styles:
+                  card:
+                    - width: 170px
+                    - background: none
+                    - font-size: 12px
+          - type: custom:paper-buttons-row
+            styles:
+              justify-content: flex-end
+            buttons:
+              - icon: hass:cog-outline
+                tap_action:
+                  action: fire-dom-event
+                  browser_mod:
+                    service: browser_mod.popup
+                    data:
+                      title: Settings
+                      style: >-
+                        --popup-min-width: 400px; --popup-max-width: auto;
+                        --popup-border-radius: 10px; --popup-background-color:
+                        var(--secondary-background-color);
+                        --dialog-backdrop-filter: blur(2em) brightness(0.75);
+                      content:
+                        type: entities
+                        entities:
+                          - style:
+                              background: "#62717b"
+                              height: 1px
+                              margin-left: auto
+                              margin-right: auto
+                            type: divider
+                          - entity: sensor.time
+                            name: Clock
+                          - type: divider
+                          - entity: sensor.date
+                            name: Date
+                          - type: divider
+                          - type: custom:multiple-entity-row
+                            entity: input_boolean.notify_push_door
+                            icon: mdi:message
+                            name: Notifications
+                            toggle: true
+                            state_header: HA
+                            entities:
+                              - entity: input_boolean.notify_telegram_door
+                                name: TELEGRAM
+                                toggle: true
+                          - type: section
+                            label: Time Range Notification
+                          - entity: input_datetime.notification_start_time
+                            name: From
+                            icon: mdi:timer-outline
+                          - entity: input_datetime.notification_end_time
+                            name: To
+                            icon: mdi:timer-outline
+      - type: horizontal-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: picture-entity
+                entity: binary_sensor.door_package_sensor
+                show_name: false
+                show_state: false
+                image: /local/photo-pkg/door-closed.png
+                state_image:
+                  "on": /local/photo-pkg/door-opened.png
+                  "off": /local/photo-pkg/door-closed.png
+                tap_action:
+                  action: none
+                card_mod:
+                  style: |
+                    ha-card {
+                      left: 25%;
+          - type: vertical-stack
+            cards:
+              - type: custom:hui-element
+                card_type: vertical-stack
+                cards:
+                  - type: button
+                    layout: icon_name
+                    name: 🔐 Smart Lock
+                    entity: lock.door
+                    show_icon: false
+                    show_name: true
+                    show_state: true
+                    card_mod:
+                      style: |
+                        ha-card {
+                          width: 120px;
+                          left: 40%;
+                          --ha-card-background: none;
+                          --ha-card-box-shadow": none;
+                        }
+                        span {
+                          font-size: 12px !important;
+                        }
+                    tap_action:
+                      action: more-info
+                      confirmation:
+                        text: 🔐 Do you want to open the front door? 🔐
+              - type: button
+                layout: icon_name
+                name: 🚪Gate
+                entity: lock.gate
+                show_icon: false
+                show_state: true
+                card_mod:
+                  style: |
+                    ha-card {
+                      width: 120px;
+                      left: 40%;
+                      --ha-card-background: none;
+                      --ha-card-box-shadow": none;
+                    }
+                    span {
+                      font-size: 12px !important;
+                    }
+                tap_action:
+                  action: call-service
+                  service: lock.unlock
+                  target:
+                    entity_id: lock.gate
+                  confirmation:
+                    text: 🔐 Do you want to open the gate? 🔐
+                styles:
+                  grid:
+                    - grid-template-columns: 50px auto
+                  icon:
+                    - justify-self: center
+                    - align-items: center
+                    - padding: 0px 0px
+                    - height: 30px
+                    - width: 30px
+                  card:
+                    - "--ha-card-background": none
+                  state:
+                    - padding: 0px 10px
+                    - justify-self: center
+                    - font-family: Roboto, sans-serif
+                    - font-size: 15px
+                  name:
+                    - padding: 0px 10px
+                    - justify-self: center
+                    - color: var(--primary-text-color)
+              - type: button
+                layout: icon_name
+                name: 🚪Building entrance
+                entity: lock.building_entrance
+                show_icon: false
+                show_state: true
+                card_mod:
+                  style: |
+                    ha-card {
+                      width: 120px;
+                      left: 40%;
+                      --ha-card-background: none;
+                      --ha-card-box-shadow": none;
+                    }
+                    span {
+                      font-size: 12px !important;
+                    }
+                tap_action:
+                  action: call-service
+                  service: lock.unlock
+                  target:
+                    entity_id: lock.building_entrance
+                  confirmation:
+                    text: 🔐 Do you want to open the building entrance? 🔐
+                styles:
+                  grid:
+                    - grid-template-columns: 50px auto
+                  icon:
+                    - padding: 0px 0px
+                    - height: 30px
+                    - width: 30px
+                  card:
+                    - "--ha-card-background": none
+                  state:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - font-family: Roboto, sans-serif
+                    - font-size: 15px
+                  name:
+                    - padding: 0px 10px
+                    - justify-self: start
+                    - color: var(--primary-text-color)
+show_header_toggle: false
