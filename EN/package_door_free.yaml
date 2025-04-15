@@ -35,10 +35,6 @@ input_datetime:
     name: "Last Door Opening"
     has_date: true
     has_time: true
-  snapshot_time:
-    name: "Snapshot Time"
-    has_date: true
-    has_time: true
   notification_start_time:
     name: "Notification Start Time"
     has_date: false
@@ -61,7 +57,6 @@ template:
       - name: "Door Lock State"
         state: "{{ is_state('input_boolean.package_door_switch', 'off') }}"
         device_class: lock
-  - binary_sensor:
       - name: "Door Package Sensor"
         unique_id: door_package_sensor
         state: *door
