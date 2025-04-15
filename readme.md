@@ -1,6 +1,6 @@
-## 💲[BUY ME](https://stateforge.gumroad.com/l/PackagePortaIngresso?_gl=1*55npor*_ga*NjQxMDYzMS4xNzQ0NzE0NzIw*_ga_6LJN6D94N6*MTc0NDcxNDcxOS4xLjEuMTc0NDcxNTkzNi4wLjAuMA)💲 Support us with a small donation for our work and get access to the full package 🩷
+## 💲[BUY ME](https://stateforge.gumroad.com/l/PackagedoorIngresso?_gl=1*55npor*_ga*NjQxMDYzMS4xNzQ0NzE0NzIw*_ga_6LJN6D94N6*MTc0NDcxNDcxOS4xLjEuMTc0NDcxNTkzNi4wLjAuMA)💲 Support us with a small donation for our work and get access to the full package 🩷
 
-# 🚪 OneState Packages - Porta Ingresso 🚪
+# 🚪 OneState Packages - Porta Ingresso - Front Door 🚪
 
 Welcome to the guide for our first package, where you can manage everything through a single card with the following features:
 
@@ -29,7 +29,7 @@ homeassistant:
   packages: !include_dir_named packages
 ```
 
-4. Go to the new `packages` folder, download and add the file `package_porta.yaml`.
+4. Go to the new `packages` folder, download and add the file `package_door.yaml`.
 
 ---
 
@@ -53,7 +53,7 @@ Follow all the steps below (they are also included in the package):
 ### 🐍 Python Scripts
 
 - Setup Python Scripts: [LINK](https://www.home-assistant.io/integrations/python_script/)
-- Download and add `snapshot_porta.py` into the `python_scripts` folder <---- INCLUDED IN THE PACKAGE
+- Download and add `snapshot_door.py` into the `python_scripts` folder <---- INCLUDED IN THE PACKAGE
 
 ---
 
@@ -63,64 +63,64 @@ Add this shell command in `configuration.yaml`:
 
 ```yaml
 shell_command:
-  pulisci_snapshot: "find /config/www/snapshot_porta/ -type f -name '*.jpg' -delete"
+  pulisci_snapshot: "find /config/www/snapshot_door/ -type f -name '*.jpg' -delete"
 ```
 
 ---
 
-## 📁 `snapshot_porta` and `foto-pkg` Folders
+## 📁 `snapshot_door` and `photo-pkg` Folders
 
-Create the folders `snapshot_porta` and `foto-pkg` inside `/config/www` (use File Editor or Samba).
+Create the folders `snapshot_door` and `photo-pkg` inside `/config/www` (use File Editor or Samba).
 
-Once created, upload the images from the GitHub folder into `foto-pkg` (`porta-aperta.png` and `porta-chiusa.png`), which will be used in the card.
+Once created, upload the images from the package folder `photo-pkg` (`door-opened.png` and `door-closed.png`), which will be used in the card.
 
 ---
 
 ## 🧠 Configuration
 
-Insert your PIN in `secrets.yaml`:
+Store your PIN in `secrets.yaml`:
 
 ```
-pin_sblocco_porta: 1234
+pin_unlock_door: 1234
 ```
 
-Config inside `package_porta.yaml`:
+Config inside `package_front_door.yaml`:
 ```
 # Smart Lock
-Smart Lock: &lock lock.porta                                       # Replace with your smart lock entity ID
+Smart Lock: &lock lock.door                                         # Replace with your smart lock entity ID
 
 # Unlock PIN
-Door Unlock Code: &pin !secret pin_sblocco_porta                   # You can also insert the PIN directly here instead of using `!secret`
+Door Unlock Code: &pin !secret pin_unlock_door                      # You can also insert the PIN directly here instead of using `!secret` - DEFAULT INCLUDED PIN
 
 # Door Sensors
-Door Sensor: &porta "{{ states('binary_sensor.porta')}}"           # Replace with your door sensor entity
-Door Sensor Entity: &porta2 binary_sensor.porta                    # Replace with your door sensor entity
+Door Sensor: &door "{{ states('binary_sensor.door')}}"              # Replace with your door sensor entity
+Door Sensor Entity: &door2 binary_sensor.door                       # Replace with your door sensor entity
 
 # Camera
-Camera: &camera camera.TELECAMERA                                  # Replace with your camera entity ID
+Camera: &camera camera.door_camera                                  # Replace with your camera entity ID
 
 # Notification Services
-Push Notification Device: &push notify.push_roberto                # Replace with your device ID
-Telegram Notification Device: &telegram notify.telegram_lotablet   # Replace with your Telegram bot ID
+Push Notification Service: &push notify.push_roberto                # Replace with your device ID
+Telegram Notification Service: &telegram notify.telegram_lotablet   # Replace with your Telegram bot ID
 ```
 
 ## 💳 Card
 
-Add a **manual card** to your Lovelace dashboard and paste the `package_porta.yaml` code.
+Add a **manual card** to your Lovelace dashboard and paste the `package_door.yaml` code.
 
 ### Available Card Types
 
 We’ve created 4 card variations based on different needs:
 
-- Card with 2 buttons: **Main Door + Gate** via `lock.unlock`
-- Card with 2 buttons: **Main Door + Gate** via `switch.toggle` 
-- Card with 1 button: **Main Door** via `lock.unlock` 
-- Card with 1 button: **Main Door** via `switch.toggle`
+- Card with 2 buttons: **Gate + Building Entrance** via `lock.unlock`
+- Card with 2 buttons: **Gate + Building Entrance** via `switch.toggle` 
+- Card with 1 button: **Building Entrance** via `lock.unlock` 
+- Card with 1 button: **Building Entrance** via `switch.toggle`
 
 Replace entity names and services in the YAML code with your actual devices used to open doors/gates.
 
-![cancello_lock](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/cancello_lock.gif) 
-![cancello_switch](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/cancello_switch.gif)
+![cancello_lock](https://github.com/OneStatePackages/ha-package-door-ingresso/blob/main/samples/cancello_lock.gif) 
+![cancello_switch](https://github.com/OneStatePackages/ha-package-door-ingresso/blob/main/samples/cancello_switch.gif)
 
 Make sure `service: lock.unlock` or `service: switch.toggle` are actually what opens your door or gate!
 
@@ -132,7 +132,7 @@ Now **restart the server** from Settings → System → Server Controls.
 
 If everything is configured properly, you should see a screen like this:
 
-![sample](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/samples/sample.gif)
+![sample](https://github.com/OneStatePackages/ha-package-door-ingresso/blob/main/samples/sample.gif)
 
 ---
 
