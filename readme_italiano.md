@@ -1,4 +1,4 @@
-## 💲[BUY ME](https://stateforge.gumroad.com/l/PackagePortaIngresso?_gl=1*55npor*_ga*NjQxMDYzMS4xNzQ0NzE0NzIw*_ga_6LJN6D94N6*MTc0NDcxNDcxOS4xLjEuMTc0NDcxNTkzNi4wLjAuMA)💲 Supportaci con una piccola donazione per il nostro lavoro ed avere accesso al package 🩷
+## 💲[BUY ME](https://stateforge.gumroad.com/l/PackagePortaIngresso?wanted=true)💲 Supportaci con una piccola donazione per il nostro lavoro ed avere accesso al package 🩷
 
 # 🚪 OneState Packages - Porta d'Ingresso 🚪
 
