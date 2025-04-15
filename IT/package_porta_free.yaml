@@ -56,7 +56,6 @@ template:
       - name: "Porta Stato Blocco"
         state: "{{ is_state('input_boolean.package_porta_switch', 'off') }}"
         device_class: lock
-  - binary_sensor:
       - name: "Sensore Porta Package"
         unique_id: sensore_porta_package
         state: *porta
