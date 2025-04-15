@@ -89,7 +89,9 @@ Per ricevere le notifiche su Telegram, è necessario configurare un **bot** e re
        platform: telegram
        chat_id: 123456789
 
-Trova il tuo Chat ID (scrivi a @MyIDIMBot e ti darà il tuo chatID)
+Trova il tuo Chat ID
+
+Scrivi a @MyIDIMBot e ti darà il tuo chatID
 
 Dopo aver modificato configuration.yaml, riavvia Home Assistant per applicare le modifiche
 
