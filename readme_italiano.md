@@ -10,8 +10,8 @@ Questo pacchetto ti permette di controllare tutto dalla stessa card Lovelace:
 - Aprire il cancello e il portone  
 - Ricevere notifiche push e su Telegram
 
-> ⚠️ Questa è la **versione base**.  
-> Le seguenti funzionalità sono disponibili nella **versione PRO**:
+> ⚠️ Qui su github è inclusa la **versione base**.  
+> Le seguenti funzionalità e configurazioni sono disponibili nella **versione PRO**:
 > - Tastierino numerico integrato
 > - Snapshot automatico all’apertura porta
 > - Invio snapshot su Telegram
