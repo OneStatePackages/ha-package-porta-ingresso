@@ -1,7 +1,9 @@
 # 🚪 OneState Packages – Porta d’Ingresso 🚪
 
+👉 Looking for the English version? Check out the [English Guide](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/readme_english.md)
+
 Benvenuto nel nostro primo package per Home Assistant!
-Check out our guide in English -> [ENGLISH GUIDE]
+
 Con questo pacchetto puoi gestire tutto da un’unica card Lovelace:
 
 - ✅ Verificare se la porta d’ingresso è aperta o chiusa  
