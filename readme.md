@@ -11,8 +11,8 @@ With this package, you can control everything from a single Lovelace card:
 - Open the gate and building entrance  
 - Receive push and Telegram notifications
 
-> ⚠️ This is the **free version**.  
-> The following features are available in the **PRO version**:
+> ⚠️ Here on Github is included the **free version**.  
+> The following features and configurations are available in the **PRO version**:
 > - Integrated numeric keypad
 > - Automatic snapshot when door opens
 > - Snapshot sent to Telegram
