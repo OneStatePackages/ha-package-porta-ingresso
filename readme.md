@@ -63,7 +63,7 @@ Add this shell command in `configuration.yaml`:
 
 ```yaml
 shell_command:
-  pulisci_snapshot: "find /config/www/snapshot_door/ -type f -name '*.jpg' -delete"
+  clean_snapshots: "find /config/www/snapshot_door/ -type f -name '*.jpg' -delete"
 ```
 
 ---
