@@ -1,25 +1,29 @@
-# 🚪 OneState Packages - Porta d'Ingresso 🚪
-Benvenuto nella guida al nostro primo package per Home Assistant!
+# 🚪 OneState Packages – Porta d’Ingresso 🚪
 
-Questo pacchetto ti permette di controllare tutto dalla stessa card Lovelace:
+Benvenuto nel nostro primo package per Home Assistant!
 
-- Sapere se la porta d’ingresso è aperta o chiusa  
-- Vedere l’ultima volta che è stata aperta  
-- Visualizzare lo stato della serratura smart (se presente)  
-- Sbloccare la porta tramite comando  
-- Aprire il cancello e il portone  
-- Ricevere notifiche push e su Telegram
+Con questo pacchetto puoi gestire tutto da un’unica card Lovelace:
 
-> ⚠️ Qui su github è inclusa la **versione base**.  
-> Le seguenti funzionalità e configurazioni sono disponibili nella **versione PRO**:
-> - Tastierino numerico integrato
-> - Snapshot automatico all’apertura porta
-> - Invio snapshot su Telegram
-> - Feedback visivo per PIN errato
-> - Statistiche sugli accessi
+- ✅ Verificare se la porta d’ingresso è aperta o chiusa  
+- ⏱️ Vedere l’ultima volta che è stata aperta  
+- 🔐 Controllare lo stato della serratura smart (se disponibile)  
+- 🧩 Sbloccare la porta  
+- 🚪 Aprire cancello e portone  
+- 📩 Ricevere notifiche push e su Telegram
 
-👉 Vuoi supportarci e ottenere la versione completa?  
+---
+
+> ⚠️ **Attenzione:** questo repository contiene la **versione gratuita**.  
+> Le seguenti funzionalità avanzate sono incluse solo nella **versione PRO**:
+> 
+> - 🔢 Tastierino numerico integrato  
+> - 📸 Snapshot automatico all’apertura porta  
+> - 🤖 Invio snapshot su Telegram  
+> - 🔁 Feedback visivo per PIN corretto o errato  
+
+👉 Vuoi supportarci e ottenere l’esperienza completa?  
 [💖 Acquista la versione PRO su Gumroad](https://stateforge.gumroad.com/l/PackagePortaIngresso?wanted=true)
+
 
 
 Ora mettetevi comodi e cominciamo!
