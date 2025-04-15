@@ -62,6 +62,40 @@ homeassistant:
 Follow all the steps below (they are also included in the package):
 
 ---
+## 📲 Telegram Configuration
+
+To receive notifications via Telegram, you need to set up a **bot** and retrieve your chat ID.
+
+### 🔧 Steps:
+
+1. **Create a bot**
+   - Search for `@BotFather` on Telegram  
+   - Send the command `/newbot` and follow the instructions to create your bot  
+   - Copy the **Token** that is generated (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
+
+2. **Add the bot to Home Assistant**
+   - Open your `configuration.yaml` and add the following:
+
+   ```yaml
+   telegram_bot:
+     - platform: polling
+       api_key: "YOUR_TOKEN"
+       allowed_chat_ids:
+         - 123456789  # <-- Insert your actual chat_id here
+
+   notify:
+     - name: my_telegram
+       platform: telegram
+       chat_id: 123456789
+
+Find your Chat ID
+
+Use @MyIDBot → it will instantly reply with your chat ID
+
+After editing configuration.yaml, restart Home Assistant to apply the changes
+
+✅ You can now use the notify.my_telegram service inside the package to send notifications, including snapshots or images.
+---
 
 ### 🐍 Python Scripts
 
