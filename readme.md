@@ -30,7 +30,7 @@ homeassistant:
   packages: !include_dir_named packages
 ```
 
-4. Una volta fatto, vai nella cartella `packages` appena creata, scarica e inserisci il file: [package_porta.yaml](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/package_porta.yaml)`.
+4. Una volta fatto, vai nella cartella `packages` appena creata, scarica e inserisci il file: `package_porta.yaml`.
 
 ---
 
@@ -54,7 +54,7 @@ Segui alla lettera tutti i passaggi indicati qui sotto (che comunque trovi anche
 ### 🐍 Python Scripts
 
 - Configura Python Scripts: [LINK](https://www.home-assistant.io/integrations/python_script/)
-- Scarica e inserisci all’interno della cartella `python_scripts` il file [snapshot_porta.py](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/snapshot_porta.py)
+- Scarica e inserisci all’interno della cartella `python_scripts` il file `snapshot_porta.py` <---- INCLUSO NEL PACCHETTO
 
 ---
 
@@ -87,7 +87,7 @@ Inserire il PIN in `secrets.yaml`:
 ```
 pin_sblocco_porta: 1234
 ```
-Configurazione [package_porta.yaml](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/package_porta.yaml)`:
+Configurazione `package_porta.yaml`: 
 ```
 # Serratura Smart
 Smart Lock: &lock lock.porta                                       # Sostituisci con l'ID della tua smart lock
@@ -115,14 +115,14 @@ Aggiungi una **nuova scheda manuale** nella dashboard Lovelace e incolla il codi
 
 Abbiamo preferito fare 4 tipi di card in base ad ogni esigenza:
 
-- Card con 2 pulsanti: **Portone + Cancello** apertura via `lock.unlock` → [card](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/package_porta_2_pulsanti_cancello_portone_lock_card.yaml)  
-- Card con 2 pulsanti: **Portone + Cancello** apertura via `switch.toggle` → [card](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/package_porta_2_pulsanti_cancello_portone_switch_card.yaml)  
-- Card con 1 pulsante: **Portone** apertura via `lock.unlock` → [card](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/package_porta_1_pulsante_portone_lock_card.yaml)  
-- Card con 1 pulsante: **Portone** apertura via `switch.toggle` → [card](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/package_porta_2_pulsanti_cancello_portone_switch_card.yaml)
+- Card con 2 pulsanti: **Portone + Cancello** apertura via `lock.unlock`
+- Card con 2 pulsanti: **Portone + Cancello** apertura via `switch.toggle` 
+- Card con 1 pulsante: **Portone** apertura via `lock.unlock` 
+- Card con 1 pulsante: **Portone** apertura via `switch.toggle`
 
 Sostituisci nel codice YAML i nomi, l' entità e il servizio con quelle reali del tuo dispositivo che eseguono l'azione di apertura, come da immagine:
 
-![cancello_lock](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/cancello_lock.gif)
+![cancello_lock](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/sample/cancello_lock.gif)
 
 Assicurarsi che `service: lock.unlock` oppure `service: switch.toggle` siano realmente i servizi che aprono il Portone o il Cancello!
 ---
@@ -133,7 +133,7 @@ Ora **riavvia il server** da Impostazioni → Sistema → Controlli del server.
 
 Se tutto è configurato correttamente, dovresti vedere una schermata simile a questa:
 
-![sample](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/cards/sample.gif)
+![sample](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/sample/sample.gif)
 
 ---
 
