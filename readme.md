@@ -1,16 +1,27 @@
-## 💲[BUY ME](https://stateforge.gumroad.com/l/PackagePortaIngresso?wanted=true)💲 Support us with a small donation for our work and get access to the full package 🩷
-
 # 🚪 OneState Packages - Porta Ingresso - Front Door 🚪
 
-Welcome to the guide for our first package, where you can manage everything through a single card with the following features:
+Welcome to our first Home Assistant package!
 
-- Know if the front door is open or closed  
-- See the last time it was opened  
-- Get the status of the smart lock (if available)  
-- Set a PIN to unlock the door  
-- View the latest snapshot (a camera takes a picture when the door opens)  
-- Open the gate and main door  
-- Receive push and Telegram notifications  
+With this package, you can control everything from a single Lovelace card:
+
+- Check if the front door is open or closed  
+- View the last time it was opened  
+- Check smart lock status (if available)  
+- Unlock the door  
+- Open the gate and building entrance  
+- Receive push and Telegram notifications
+
+> ⚠️ This is the **free version**.  
+> The following features are available in the **PRO version**:
+> - Integrated numeric keypad
+> - Automatic snapshot when door opens
+> - Snapshot sent to Telegram
+> - Visual feedback for incorrect PIN
+> - Access statistics
+
+👉 Want to support us and get the full experience?  
+[💖 Get the PRO version on Gumroad](https://stateforge.gumroad.com/l/PackagePortaIngresso?wanted=true)
+
 
 Now sit back and let's get started!
 
