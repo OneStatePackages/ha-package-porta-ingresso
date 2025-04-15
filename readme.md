@@ -90,7 +90,8 @@ Config inside `package_front_door.yaml`:
 Smart Lock: &lock lock.door                                         # Replace with your smart lock entity ID
 
 # Unlock PIN
-Door Unlock Code: &pin !secret pin_unlock_door                      # You can also insert the PIN directly here instead of using `!secret` - DEFAULT INCLUDED PIN
+Door Unlock Code: &pin !secret pin_unlock_door                      # You can also insert the PIN directly here instead
+                                                                    # of using `!secret` - DEFAULT INCLUDED DIRECTLY
 
 # Door Sensors
 Door Sensor: &door "{{ states('binary_sensor.door')}}"              # Replace with your door sensor entity
