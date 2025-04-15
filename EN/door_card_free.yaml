@@ -122,7 +122,7 @@ entities:
                           width: 120px;
                           left: 40%;
                           --ha-card-background: none;
-                          --ha-card-box-shadow": none;
+                          --ha-card-box-shadow: none;
                         }
                         span {
                           font-size: 12px !important;
