@@ -2,74 +2,69 @@ homeassistant:
   customize:
     package.node_anchors:
       customize: &customize
-        package: 'OneState Packages - Front Door'
+        package: 'OneState Packages - Porta Ingresso'
         author: 'OneState'
       setting:
 ######################################################################
 #                                                                    #
-#                        PACKAGE SETTINGS                            #
+#                         IMPOSTAZIONI PACKAGE                       #
 #                                                                    #
 ######################################################################
-#
-# IF YOU WANT THE PRO VERSION WITH KEYPAD, SNAPSHOTS AND MORE
-# YOU CAN SHOP ON → https://stateforge.gumroad.com/l/PackagePortaIngresso
-#
-################### SENSOR CONFIGURATION ############################
-
 
         # SMART LOCK
-        Smart Lock: &lock lock.door
+        Smart Lock: &lock lock.porta
 
-        # DOOR SENSORS
-        Door Sensor: &door "{{ states('binary_sensor.door')}}"
-        Door Sensor Entity: &door2 binary_sensor.door
+        # SENSORI PORTA
+        Sensore porta: &porta "{{ states('binary_sensor.porta')}}"
+
+        Sensore porta entità: &porta2 binary_sensor.porta
+
+        # SERVIZI NOTIFICHE
+        Servizio notifica push: &push notify.push_roberto
+
+        Servizio notifica telegram: &telegram notify.telegram_lotablet
 
 
-        # NOTIFICATION SERVICES
-        Push Notification Service: &push notify.mobile_app_roberto
-        Telegram Notification Service: &telegram notify.telegram_lorenzo
+
 
 
 input_datetime:
   last_door_open:
-    name: "Last Door Opening"
+    name: "Ultima apertura porta"
     has_date: true
     has_time: true
-  snapshot_time:
-    name: "Snapshot Time"
-    has_date: true
-    has_time: true
-  notification_start_time:
-    name: "Notification Start Time"
+  orario_inizio_notifiche_porta:
+    name: "Orario Inizio Notifiche"
     has_date: false
     has_time: true
-  notification_end_time:
-    name: "Notification End Time"
+  orario_fine_notifiche_porta:
+    name: "Orario Fine Notifiche"
     has_date: false
     has_time: true
+
+####################################################
 
 input_boolean:
-  notify_push_door:
-    name: "Push Notification"
-  notify_telegram_door:
-    name: "Telegram Notification"
-  package_door_switch:
-    name: "Door Package Switch"
-
+  notify_push_porta:
+    name: "Notifica Push"
+  notify_telegram_porta:
+    name: "Notifica Telegram"
+  package_porta_switch:
+    name: "Package Porta Switch"
 template:
   - binary_sensor:
-      - name: "Door Lock State"
-        state: "{{ is_state('input_boolean.package_door_switch', 'off') }}"
+      - name: "Porta Stato Blocco"
+        state: "{{ is_state('input_boolean.package_porta_switch', 'off') }}"
         device_class: lock
   - binary_sensor:
-      - name: "Door Package Sensor"
-        unique_id: door_package_sensor
-        state: *door
+      - name: "Sensore Porta Package"
+        unique_id: sensore_porta_package
+        state: *porta
         device_class: door
 
 automation:
-  - alias: Door Package - Sync Door State at Startup
-    description: "Sync input_boolean with real lock state at boot"
+  - alias: Package Porta - Sync Stato Porta al Riavvio
+    description: "Sincronizza input_boolean con lo stato reale della serratura al boot"
     trigger:
       - platform: homeassistant
         event: start
@@ -84,7 +79,7 @@ automation:
             sequence:
               - service: input_boolean.turn_on
                 target:
-                  entity_id: input_boolean.package_door_switch
+                  entity_id: input_boolean.package_porta_switch
           - conditions:
               - condition: state
                 entity_id: *lock
@@ -92,34 +87,33 @@ automation:
             sequence:
               - service: input_boolean.turn_off
                 target:
-                  entity_id: input_boolean.package_door_switch
+                  entity_id: input_boolean.package_porta_switch
     mode: single
-
-  - alias: Door Package - Switch
+  - alias: Package Porta - Switch
     mode: single
     trigger:
       - platform: state
-        entity_id: input_boolean.package_door_switch
+        entity_id: input_boolean.package_porta_switch
         to: "on"
-        id: door_on
+        id: porta_on
       - platform: state
-        entity_id: input_boolean.package_door_switch
+        entity_id: input_boolean.package_porta_switch
         to: "off"
-        id: door_off
+        id: porta_off
       - platform: state
         entity_id: *lock
         to: "locked"
-        id: locked
+        id: bloccato
       - platform: state
         entity_id: *lock
         to: "unlocked"
-        id: unlocked
+        id: sbloccato
     condition: []
     action:
       - choose:
           - conditions:
               - condition: trigger
-                id: door_off
+                id: porta_off
               - condition: state
                 entity_id: *lock
                 state: "locked"
@@ -127,9 +121,10 @@ automation:
               - service: lock.unlock
                 target:
                   entity_id: *lock
+
           - conditions:
               - condition: trigger
-                id: door_on
+                id: porta_on
               - condition: state
                 entity_id: *lock
                 state: "unlocked"
@@ -137,71 +132,73 @@ automation:
               - service: lock.lock
                 target:
                   entity_id: *lock
+
           - conditions:
               - condition: trigger
-                id: locked
+                id: bloccato
               - condition: state
-                entity_id: input_boolean.package_door_switch
+                entity_id: input_boolean.package_porta_switch
                 state: "off"
             sequence:
               - service: input_boolean.turn_on
                 target:
-                  entity_id: input_boolean.package_door_switch
+                  entity_id: input_boolean.package_porta_switch
+
           - conditions:
               - condition: trigger
-                id: unlocked
+                id: sbloccato
               - condition: state
-                entity_id: input_boolean.package_door_switch
+                entity_id: input_boolean.package_porta_switch
                 state: "on"
             sequence:
               - service: input_boolean.turn_off
                 target:
-                  entity_id: input_boolean.package_door_switch
-
-  - alias: Door Package - Send message
-    id: door_message
+                  entity_id: input_boolean.package_porta_switch
+  - mode: single
+    id: package_porta_notifiche
+    alias: "Package Porta - Notifiche"
     trigger:
       - platform: state
-        entity_id: *door2
+        entity_id: *porta2
         to: "on"
-        id: door_open
+        id: porta
     action:
       - choose:
           - conditions:
               - condition: trigger
-                id: door_open
+                id: porta
               - condition: state
-                entity_id: input_boolean.notify_push_door
+                entity_id: input_boolean.notify_push_porta
                 state: "on"
               - condition: time
-                after: input_datetime.notification_start_time
-                before: input_datetime.notification_end_time
+                after: input_datetime.orario_inizio_notifiche_porta
+                before: input_datetime.orario_fine_notifiche_porta
             sequence:
               - service: *push
                 data:
-                  message: "🚪 Door Opened 🚪"
+                  message: "🚪 Porta Aperta 🚪"
       - choose:
           - conditions:
               - condition: trigger
-                id: door_open
+                id: porta
               - condition: state
-                entity_id: input_boolean.notify_telegram_door
+                entity_id: input_boolean.notify_telegram_porta
                 state: "on"
               - condition: time
-                after: input_datetime.notification_start_time
-                before: input_datetime.notification_end_time
+                after: input_datetime.orario_inizio_notifiche_porta
+                before: input_datetime.orario_fine_notifiche_porta
             sequence:
               - service: *telegram
                 data:
-                  message: "🚪 Door Opened 🚪"
+                  message: "🚪Porta Aperta🚪"
 
-  - alias: Door Package - Register last door open
-    id: record_last_door_open
-    description: "Updates date and time of last door opening"
+  - alias: "Package Porta - Registra ultima apertura porta"
+    id: regista_ultima_apertura_porta
+    description: "Aggiorna la data e l'ora dell'ultima apertura della porta"
     trigger:
       - platform: state
-        entity_id: *door2
-        to: "on"
+        entity_id: *porta2
+        to: 'on'
     action:
       - service: input_datetime.set_datetime
         target:
