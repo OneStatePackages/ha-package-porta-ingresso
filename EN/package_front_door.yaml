@@ -1,0 +1,336 @@
+homeassistant:
+  customize:
+    package.node_anchors:
+      customize: &customize
+        package: 'OneState Packages - Front Door'
+        author: 'OneState'
+      setting:
+######################################################################
+#                                                                    #
+#                        PACKAGE SETTINGS                            #
+#                                                                    #
+######################################################################
+
+###################### PYTHON SCRIPTS ################################
+#
+# Configure PYTHON_SCRIPTS → https://www.home-assistant.io/integrations/python_script/
+# Then place the file "snapshot_door.py" inside the "python_scripts" folder
+#
+###################### SHELL COMMAND #################################
+#
+# Add this shell command to "configuration.yaml" (remove "#")
+#
+# shell_command:
+#   clean_snapshots: "find /config/www/snapshot_door/ -type f -name '*.jpg' -delete"
+#
+#################### FOLDER snapshot_door ##############################
+#
+# CREATE the folder "snapshot_door" inside "/config/www" (via File Editor or Samba)
+#
+################### SENSOR CONFIGURATION ############################
+#
+# You can INSERT the PIN DIRECTLY HERE instead of !secret pin_unlock_door
+# or define in secrets.yaml → pin_unlock_door: 1234
+#
+        # SMART LOCK
+        Smart Lock: &lock lock.door
+
+        # UNLOCK CODE
+        Door Unlock Code: &pin 1234
+
+        # DOOR SENSORS
+        Door Sensor: &door "{{ states('binary_sensor.door')}}"
+        Door Sensor Entity: &door2 binary_sensor.door
+
+        # CAMERA ENTITY
+        Camera: &camera camera.door_camera
+
+        # NOTIFICATION SERVICES
+        Push Notification Service: &push notify.mobile_roberto
+        Telegram Notification Service: &telegram notify.telegram_lotablet
+
+
+input_datetime:
+  last_door_open:
+    name: "Last Door Opening"
+    has_date: true
+    has_time: true
+  snapshot_time:
+    name: "Snapshot Time"
+    has_date: true
+    has_time: true
+  notification_start_time:
+    name: "Notification Start Time"
+    has_date: false
+    has_time: true
+  notification_end_time:
+    name: "Notification End Time"
+    has_date: false
+    has_time: true
+
+input_boolean:
+  notify_push_door:
+    name: "Push Notification"
+  notify_telegram_door:
+    name: "Telegram Notification"
+  package_door_switch:
+    name: "Door Package Switch"
+
+input_text:
+  digital_pin:
+    name: "Digital PIN"
+    max: 4
+    pattern: '[0-9]*'
+    mode: text
+  pin_feedback:
+    name: "PIN Feedback"
+    max: 50
+  snapshot_path_telegram:
+    name: "Snapshot Path Telegram"
+  snapshot_path_frontend:
+    name: "Snapshot Path Frontend"
+
+template:
+  - binary_sensor:
+      - name: "Door Lock State"
+        state: "{{ is_state('input_boolean.package_door_switch', 'off') }}"
+        device_class: lock
+  - binary_sensor:
+      - name: "Door Package Sensor"
+        unique_id: door_sensor_package
+        state: *door
+        device_class: door
+
+automation:
+  - alias: Door Package - Sync Door State at Startup
+    description: "Sync input_boolean with real lock state at boot"
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition: []
+    action:
+      - delay: "00:00:30"
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: *lock
+                state: "locked"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.package_door_switch
+          - conditions:
+              - condition: state
+                entity_id: *lock
+                state: "unlocked"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_door_switch
+    mode: single
+
+  - alias: Door Package - Switch
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.package_door_switch
+        to: "on"
+        id: door_on
+      - platform: state
+        entity_id: input_boolean.package_door_switch
+        to: "off"
+        id: door_off
+      - platform: state
+        entity_id: *lock
+        to: "locked"
+        id: locked
+      - platform: state
+        entity_id: *lock
+        to: "unlocked"
+        id: unlocked
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: door_off
+              - condition: state
+                entity_id: *lock
+                state: "locked"
+            sequence:
+              - service: lock.unlock
+                target:
+                  entity_id: *lock
+          - conditions:
+              - condition: trigger
+                id: door_on
+              - condition: state
+                entity_id: *lock
+                state: "unlocked"
+            sequence:
+              - service: lock.lock
+                target:
+                  entity_id: *lock
+          - conditions:
+              - condition: trigger
+                id: locked
+              - condition: state
+                entity_id: input_boolean.package_door_switch
+                state: "off"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.package_door_switch
+          - conditions:
+              - condition: trigger
+                id: unlocked
+              - condition: state
+                entity_id: input_boolean.package_door_switch
+                state: "on"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_door_switch
+
+  - alias: Door Package - Reset PIN Unlock
+    trigger:
+      - platform: state
+        entity_id: input_boolean.pin_unlock_ok
+        to: "on"
+        for: "00:00:30"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.pin_unlock_ok
+
+  - alias: Door Package - Send snapshot when door opens
+    id: door_package_send_photo
+    description: Takes a snapshot and sends via Telegram when door opens.
+    trigger:
+      - platform: state
+        entity_id: *door2
+        to: "on"
+        id: door_open
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.snapshot_time
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+      - delay: "00:00:02"
+      - service: python_script.snapshot_door
+        data:
+          entity_id: *camera
+      - delay: "00:00:05"
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: door_open
+              - condition: state
+                entity_id: input_boolean.notify_push_door
+                state: "on"
+              - condition: time
+                after: input_datetime.notification_start_time
+                before: input_datetime.notification_end_time
+            sequence:
+              - service: *push
+                data:
+                  message: "🚪 Door Opened 🚪"
+                  data:
+                    image: "{{ states('input_text.snapshot_path_frontend') }}"
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: door_open
+              - condition: state
+                entity_id: input_boolean.notify_telegram_door
+                state: "on"
+              - condition: time
+                after: input_datetime.notification_start_time
+                before: input_datetime.notification_end_time
+            sequence:
+              - service: *telegram
+                data:
+                  message: ""
+                  data:
+                    photo:
+                      - file: "{{ states('input_text.snapshot_path_telegram') }}"
+                        caption: "📸 Snapshot taken when door opened"
+
+  - alias: Door Package - Register last door open
+    id: record_last_door_open
+    description: "Updates date and time of last door opening"
+    trigger:
+      - platform: state
+        entity_id: *door2
+        to: "on"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.last_door_open
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+    mode: single
+
+  - alias: Door Package - Clean snapshots every night
+    id: clean_snapshots_nightly
+    trigger:
+      - platform: time
+        at: "04:00:00"
+    action:
+      - service: shell_command.clean_snapshots
+    mode: single
+
+script:
+  door_package_pin:
+    alias: Door Package - PIN Code
+    sequence:
+      - variables:
+          raw_pin: "{{ states('input_text.digital_pin') }}"
+          entered_pin: |
+            {% if raw_pin | is_number %}
+              {{ raw_pin | int }}
+            {% else %}
+              -1
+            {% endif %}
+          secret_pin: *pin
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ entered_pin == secret_pin }}"
+            sequence:
+              - service: input_text.set_value
+                data:
+                  entity_id: input_text.pin_feedback
+                  value: "UNLOCKED"
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_door_switch
+        default:
+          - service: input_text.set_value
+            data:
+              entity_id: input_text.pin_feedback
+              value: "WRONG"
+      - delay: "00:00:03"
+      - service: input_text.set_value
+        data:
+          entity_id:
+            - input_text.pin_feedback
+            - input_text.digital_pin
+          value: ""
+
+  lock_door_feedback:
+    alias: Door Package - Lock Door + Feedback
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.package_door_switch
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.pin_feedback
+          value: "LOCKED"
+      - delay: "00:00:03"
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.pin_feedback
+          value: ""
