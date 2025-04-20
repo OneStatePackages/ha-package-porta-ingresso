@@ -1,0 +1,343 @@
+homeassistant:
+  customize:
+    package.node_anchors:
+      customize: &customize
+        package: 'OneState Packages - Porta Ingresso'
+        author: 'OneState'
+      setting:
+######################################################################
+#                                                                    #
+#                         IMPOSTAZIONI PACKAGE                       #
+#                                                                    #
+######################################################################
+#
+#
+###################### PYTHON SCRIPTS ################################
+#
+#       Configurare PYTHON_SCRIPTS -> https://www.home-assistant.io/integrations/python_script/
+#           poi inserire all'interno della cartella "python_scripts" il file "snapshot_porta.py"
+#
+###################### SHELL COMMAND #################################
+#
+#        Aggiungere questa shell command in "configuration.yaml" senza "#"
+#
+#        shell_command:
+#          pulisci_snapshot: "find /config/www/snapshot_porta/ -type f -name '*.jpg' -delete"
+#################### CARTELLA snapshot_porta ##############################
+#
+#
+#       CREARE LA CARTELLA "snapshot_porta" dentro la cartella "/config/www" (con File Editor o Samba)
+#
+#
+################### CONFIGURAZIONE SENSORI ############################
+#
+#       POSSIAMO INSERIRE DIRETTAMENTE IL PIN QUI AL POSTO DI !secret pin_sblocco_porta
+#       oppure inserire in secrets.yaml -> pin_sblocco_porta: 1234
+#
+        # SMART LOCK
+        Smart Lock: &lock lock.porta
+
+        # CODICE DI SBLOCCO
+        Codice Sblocco porta: &pin 1234
+
+        # SENSORI PORTA
+        Sensore porta: &porta "{{ states('binary_sensor.porta')}}"
+
+        Sensore porta entità: &porta2 binary_sensor.porta
+
+        # ENTITÀ TELECAMERA
+        Telecamera: &camera camera.telecamera
+
+        # SERVIZI NOTIFICHE
+        Servizio notifica push: &push notify.push_roberto
+
+        Servizio notifica telegram: &telegram notify.telegram_lotablet
+
+
+
+
+
+input_datetime:
+  last_door_open:
+    name: "Ultima apertura porta"
+    has_date: true
+    has_time: true
+  ora_snapshot:
+    name: Ora snapshot
+    has_date: true
+    has_time: true
+  orario_inizio_notifiche_porta:
+    name: "Orario Inizio Notifiche"
+    has_date: false
+    has_time: true
+  orario_fine_notifiche_porta:
+    name: "Orario Fine Notifiche"
+    has_date: false
+    has_time: true
+
+  ####################################################
+
+input_boolean:
+  notify_push_porta:
+    name: "Notifica Push"
+  notify_telegram_porta:
+    name: "Notifica Telegram"
+  package_porta_switch:
+    name: "Package Porta Switch"
+input_text:
+  pin_digitale:
+    name: PIN Digitale
+    max: 4
+    pattern: '[0-9]*'
+    mode: text
+  pin_feedback:
+    name: Feedback PIN
+    max: 50
+  snapshot_path_telegram:
+    name: "Snapshot Path Telegram"
+  snapshot_path_frontend:
+    name: "Snapshot Path Frontend"
+template:
+  - binary_sensor:
+      - name: "Porta Stato Blocco"
+        state: "{{ is_state('input_boolean.package_porta_switch', 'off') }}"
+        device_class: lock
+  - binary_sensor:
+      - name: "Sensore Porta Package"
+        unique_id: sensore_porta_package
+        state: *porta
+        device_class: door
+
+automation:
+  - alias: Package Porta - Sync Stato Porta al Riavvio
+    description: "Sincronizza input_boolean con lo stato reale della serratura al boot"
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition: []
+    action:
+      - delay: "00:00:30"
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: *lock
+                state: "locked"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.package_porta_switch
+          - conditions:
+              - condition: state
+                entity_id: *lock
+                state: "unlocked"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_porta_switch
+    mode: single
+  - alias: Package Porta - Switch
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.package_porta_switch
+        to: "on"
+        id: porta_on
+      - platform: state
+        entity_id: input_boolean.package_porta_switch
+        to: "off"
+        id: porta_off
+      - platform: state
+        entity_id: *lock
+        to: "locked"
+        id: bloccato
+      - platform: state
+        entity_id: *lock
+        to: "unlocked"
+        id: sbloccato
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: porta_off
+              - condition: state
+                entity_id: *lock
+                state: "locked"
+            sequence:
+              - service: lock.unlock
+                target:
+                  entity_id: *lock
+
+          - conditions:
+              - condition: trigger
+                id: porta_on
+              - condition: state
+                entity_id: *lock
+                state: "unlocked"
+            sequence:
+              - service: lock.lock
+                target:
+                  entity_id: *lock
+
+          - conditions:
+              - condition: trigger
+                id: bloccato
+              - condition: state
+                entity_id: input_boolean.package_porta_switch
+                state: "off"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.package_porta_switch
+
+          - conditions:
+              - condition: trigger
+                id: sbloccato
+              - condition: state
+                entity_id: input_boolean.package_porta_switch
+                state: "on"
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_porta_switch
+
+  - alias: "Package Porta - Reset sblocco PIN porta"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.pin_sblocco_ok
+        to: "on"
+        for: "00:00:30"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.pin_sblocco_ok
+  - mode: single
+    id: package_porta_invia_foto
+    alias: "Package Porta - Invia foto quando la porta è aperta"
+    description: Scatta una foto e inviala su Telegram quando il sensore della porta è aperto.
+    trigger:
+      - platform: state
+        entity_id: *porta2
+        to: "on"
+        id: porta
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.ora_snapshot
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+      - delay: "00:00:02"
+      - service: python_script.snapshot_porta
+        data:
+          entity_id: *camera
+      - delay: "00:00:05"
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: porta
+              - condition: state
+                entity_id: input_boolean.notify_push_porta
+                state: "on"
+              - condition: time
+                after: input_datetime.orario_inizio_notifiche_porta
+                before: input_datetime.orario_fine_notifiche_porta
+            sequence:
+              - service: *push
+                data:
+                  message: "🚪 Porta Aperta 🚪"
+                  data:
+                    image: "{{ states('input_text.snapshot_path_frontend') }}"
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: porta
+              - condition: state
+                entity_id: input_boolean.notify_telegram_porta
+                state: "on"
+              - condition: time
+                after: input_datetime.orario_inizio_notifiche_porta
+                before: input_datetime.orario_fine_notifiche_porta
+            sequence:
+              - service: *telegram
+                data:
+                  message: ""
+                  data:
+                    photo:
+                      - file: "{{ states('input_text.snapshot_path_telegram') }}"
+                        caption: "📸 Foto scattata dalla porta aperta"
+
+  - alias: "Package Porta - Registra ultima apertura porta"
+    id: regista_ultima_apertura_porta
+    description: "Aggiorna la data e l'ora dell'ultima apertura della porta"
+    trigger:
+      - platform: state
+        entity_id: *porta2
+        to: 'on'
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.last_door_open
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+    mode: single
+
+  - alias: "Package Porta - Pulisci snapshot ogni notte"
+    id: pulisci_snapshot_notte
+    trigger:
+      - platform: time
+        at: "04:00:00"
+    action:
+      - service: shell_command.pulisci_snapshot
+    mode: single
+script:
+  package_porta_pin:
+    alias: Porta Package - Codice Porta
+    sequence:
+      - variables:
+          pin_raw: "{{ states('input_text.pin_digitale') }}"
+          pin_inserito: |
+            {% if pin_raw | is_number %}
+              {{ pin_raw | int }}
+            {% else %}
+              -1
+            {% endif %}
+          pin_segreto: *pin
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ pin_inserito == pin_segreto }}"
+            sequence:
+              - service: input_text.set_value
+                data:
+                  entity_id: input_text.pin_feedback
+                  value: "APERTO"
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.package_porta_switch
+        default:
+          - service: input_text.set_value
+            data:
+              entity_id: input_text.pin_feedback
+              value: "ERRATO"
+      - delay: "00:00:03"
+      - service: input_text.set_value
+        data:
+          entity_id:
+            - input_text.pin_feedback
+            - input_text.pin_digitale
+          value: ""
+  blocca_porta_feedback:
+    alias: Porta Package - Blocca Porta + Feedback
+    sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.package_porta_switch
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.pin_feedback
+          value: "BLOCCATO"
+      - delay: "00:00:03"
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.pin_feedback
+          value: ""
