@@ -2,6 +2,8 @@
 
 👉 Looking for the English version? Check out the [English Guide](https://github.com/OneStatePackages/ha-package-porta-ingresso/blob/main/readme_english.md)
 
+# È uscita la custom card! 👉🏻 [LINK](https://github.com/OneStatePackages/ha-card-porta-ingresso)
+
 Benvenuto nel nostro primo package per Home Assistant!
 
 Con questo pacchetto puoi gestire tutto da un’unica card Lovelace:
